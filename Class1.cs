@@ -30,6 +30,7 @@ namespace nowYouFkedUp
         internal ManualLogSource log;
 
         internal static AudioClip sfxClip;
+        internal static AudioClip[] sfxClipArray;
 
         private void Awake()
         {
@@ -41,21 +42,30 @@ namespace nowYouFkedUp
             log = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             log.LogInfo("daevid's mod is loading");
 
-            string location = ((BaseUnityPlugin)Instance).Info.Location;
-            string dllName = "nowYouFkedUp.dll";
-            string dir = location.TrimEnd(dllName.ToCharArray());
-            string bundle = dir + "nowyoufkedup";
-            AssetBundle val = AssetBundle.LoadFromFile(bundle);
-
-            if (val == null)
+            for (int i = 0; i < 4; i+=1)
             {
-                log.LogError("failed to load sound");
-                return;
+                string location = ((BaseUnityPlugin)Instance).Info.Location;
+                string dllName = "nowYouFkedUp.dll";
+                string dir = location.TrimEnd(dllName.ToCharArray());
+                string bundle = String.Format("{0}nowyoufuckedup{1}", dir, i+1);
+                AssetBundle val = AssetBundle.LoadFromFile(bundle);
+
+                if (val == null)
+                {
+                    log.LogError("failed to load sound");
+                    return;
+                }
+
+                string str = String.Format("nowYouFuckedUp{0}.wav", i+1);
+
+                sfxClip = val.LoadAsset<AudioClip>(str);
+
+                sfxClipArray[i] = sfxClip;
             }
 
-            sfxClip = val.LoadAsset<AudioClip>("Assets/now_you_fucked_up.wav");
+
             harmony.PatchAll(typeof(modBase));
-            harmony.PatchAll(typeof(FlowermanPatch));
+            harmony.PatchAll(typeof(springManPatch));
             log.LogInfo("daevid mod sounds loaded");
         }
     }
@@ -63,15 +73,14 @@ namespace nowYouFkedUp
 
 namespace nowYouFkedUp.Patches
 {
-    [HarmonyPatch(typeof(FlowermanAI))]
-    internal class FlowermanPatch
+    [HarmonyPatch(typeof(SpringManAI))]
+    internal class springManPatch 
     {
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
-        public static void flowermanAudioPatch(FlowermanAI __instance)
+        public static void springManAudioPatch(SpringManAI __instance)
         {
-
-            __instance.crackNeckSFX = modBase.sfxClip;
+            __instance.springNoises = modBase.sfxClipArray;
         }
     }
 }
