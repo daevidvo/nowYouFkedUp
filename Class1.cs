@@ -74,6 +74,7 @@ namespace nowYouFkedUp.Patches
         [HarmonyPostfix]
         public static void springManAudioPatch(SpringManAI __instance)
         {
+            // TODO: make sfxClipArray to replace more than one springNoise
             __instance.springNoises[0] = modBase.sfxClip;
         }
     }
