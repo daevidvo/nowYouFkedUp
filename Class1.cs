@@ -30,7 +30,6 @@ namespace nowYouFkedUp
         internal ManualLogSource log;
 
         internal static AudioClip sfxClip;
-        internal static AudioClip[] sfxClipArray;
 
         private void Awake()
         {
@@ -42,30 +41,25 @@ namespace nowYouFkedUp
             log = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             log.LogInfo("daevid's mod is loading");
 
-            for (int i = 0; i < 4; i+=1)
+            string location = ((BaseUnityPlugin)Instance).Info.Location;
+            string dllName = "nowYouFkedUp.dll";
+            string dir = location.TrimEnd(dllName.ToCharArray());
+            string bundle = dir + "nowyoufkedup"; 
+            AssetBundle val = AssetBundle.LoadFromFile(bundle);
+
+            if (val == null)
             {
-                string location = ((BaseUnityPlugin)Instance).Info.Location;
-                string dllName = "nowYouFkedUp.dll";
-                string dir = location.TrimEnd(dllName.ToCharArray());
-                string bundle = String.Format("{0}nowyoufuckedup{1}", dir, i+1);
-                AssetBundle val = AssetBundle.LoadFromFile(bundle);
-
-                if (val == null)
-                {
-                    log.LogError("failed to load sound");
-                    return;
-                }
-
-                string str = String.Format("nowYouFuckedUp{0}.wav", i+1);
-
-                sfxClip = val.LoadAsset<AudioClip>(str);
-
-                sfxClipArray[i] = sfxClip;
+                log.LogError("failed to load sound");
+                return;
             }
 
+            string str = "Assets/nowYouFuckedUp1.wav"; 
+
+            sfxClip = val.LoadAsset<AudioClip>(str);
 
             harmony.PatchAll(typeof(modBase));
             harmony.PatchAll(typeof(springManPatch));
+
             log.LogInfo("daevid mod sounds loaded");
         }
     }
@@ -80,7 +74,7 @@ namespace nowYouFkedUp.Patches
         [HarmonyPostfix]
         public static void springManAudioPatch(SpringManAI __instance)
         {
-            __instance.springNoises = modBase.sfxClipArray;
+            __instance.springNoises[0] = modBase.sfxClip;
         }
     }
 }
