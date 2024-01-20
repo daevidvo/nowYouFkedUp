@@ -29,7 +29,12 @@ namespace nowYouFkedUp
 
         internal ManualLogSource log;
 
-        internal static AudioClip sfxClip;
+        internal static AudioClip sfxClip1;
+        internal static AudioClip sfxClip2;
+        internal static AudioClip sfxClip3;
+        internal static AudioClip sfxClip4;
+        internal static AudioClip sfxClip5;
+        internal static AudioClip[] sfxClipArray = { sfxClip1, sfxClip2, sfxClip3, sfxClip4, sfxClip5 };
 
         private void Awake()
         {
@@ -53,9 +58,15 @@ namespace nowYouFkedUp
                 return;
             }
 
-            string str = "Assets/nowYouFuckedUp1.wav"; 
+            for (int i= 0; i< sfxClipArray.Length; i+=1)
+            {
+                string str = String.Format("Assets/nowYouFuckedUp{0}.wav", i+1);
 
-            sfxClip = val.LoadAsset<AudioClip>(str);
+                sfxClipArray[i] = val.LoadAsset<AudioClip>(str);
+
+                log.LogInfo(str);
+                log.LogInfo(sfxClipArray.Length);
+            }
 
             harmony.PatchAll(typeof(modBase));
             harmony.PatchAll(typeof(springManPatch));
@@ -74,8 +85,10 @@ namespace nowYouFkedUp.Patches
         [HarmonyPostfix]
         public static void springManAudioPatch(SpringManAI __instance)
         {
-            // TODO: make sfxClipArray to replace more than one springNoise
-            __instance.springNoises[0] = modBase.sfxClip;
+            for (int i = 0; i < modBase.sfxClipArray.Length; i+=1)
+            {
+                __instance.springNoises[i] = modBase.sfxClipArray[i];
+            }
         }
     }
 }
