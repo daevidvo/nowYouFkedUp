@@ -14,3 +14,7 @@ If you'd like to install and use this mod, you'll need BepinEx mod first.
 ## Installation
 
 To install this mod, simply go to this [google drive link](https://drive.google.com/drive/folders/1pBNoiCYSYBjVh_dfDfjUhBT8_fF_Oj0I?usp=sharing) and install the folder in the BepinEx/plugins folder.
+
+## Contribution
+
+To contribute, just clone the repo and make a PR!
